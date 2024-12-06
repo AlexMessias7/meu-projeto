@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmação de Pedido</title>
+    <link rel="stylesheet" href="https://stackpath.amazonaws.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            background-color: #e0e0e0; /* Cor de fundo que combina com azul */
+            color: #000; /* Texto preto */
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 800px;
+            margin: auto;
+            color: #000; /* Texto preto dentro do contêiner */
+        }
+        .banner {
+            background-color: #004080; /* Fundo azul para o banner */
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centralizar o conteúdo */
+        }
+        .banner img {
+            max-height: 100px; /* Tamanho do logo */
+            margin-right: 20px; /* Espaçamento entre logo e título */
+        }
+        .banner h1 {
+            color: #fff; /* Texto branco */
+            margin: 0;
+            font-size: 2.5rem; /* Aumentar a fonte */
+            text-transform: uppercase; /* Colocar em letra maiúscula */
+        }
+        .message {
+            background-color: #e0e0e0;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        {% load static %}
+        <img src="{% static 'logo.jpg' %}" alt="Logo da Empresa">
+        <h1>Pedido Confirmado</h1>
+    </div>
+    <div class="container">
+        <div class="message">
+            <h2>Seu pedido foi enviado com sucesso!</h2>
+            <p>Obrigado por usar nosso sistema de pedidos.</p>
+            <a href="{% url 'pedido' %}" class="btn btn-primary">Fazer Novo Pedido</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizar Pedidos</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e0e0e0;
+            color: #000;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .btn {
+            margin-top: 20px;
+        }
+        .menu {
+            position: relative;
+            display: inline-block;
+        }
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            right: 0;
+        }
+        .menu-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .menu-content a:hover {
+            background-color: #f1f1f1;
+        }
+        .menu:hover .menu-content {
+            display: block;
+        }
+        .collapse-row {
+            cursor: pointer;
+        }
+        .side-panel {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100%;
+            background: #fff;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.5);
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1000;
+        }
+        .side-panel.active {
+            right: 0;
+        }
+        .side-panel-header {
+            padding: 10px;
+            background: #004080;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .side-panel-body {
+            padding: 20px;
+        }
+        .side-panel-body ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .side-panel-body ul li {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Pedidos Realizados</h1>
+        <div class="menu">
+            <button class="btn btn-secondary">
+                ⋮
+            </button>
+            <div class="menu-content">
+                <a href="#" onclick="baixarPedidosExcel()">Baixar em Excel</a>
+                <a href="#" onclick="excluirTodosPedidos()">Excluir Todos os Pedidos</a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Número do Pedido</th>
+                        <th>Dentista</th>
+                        <th>ASB</th>
+                        <th>Departamento</th>
+                        <th>Data</th>
+                        <th>Ações</th> <!-- Atualizado -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr id="pedido-{{ pedido.id }}">
+                        <td>{{ pedido.numero }}</td>
+                        <td>{{ pedido.dentista }}</td>
+                        <td>{{ pedido.asb }}</td>
+                        <td>{{ pedido.departamento.nome }}</td>
+                        <td>{{ pedido.data }}</td>
+                        <td><button class="btn btn-info" onclick="exibirMateriais({{ pedido.id }})">Ver Materiais</button></td>
+                    </tr>
+                    <tr id="materiais-{{ pedido.id }}" style="display: none;">
+                        <td colspan="6">
+                            <ul id="lista-materiais-{{ pedido.id }}">
+                                <!-- Materiais serão inseridos aqui via JavaScript -->
+                            </ul>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>                                                
+
+    <div class="side-panel" id="side-panel">
+        <div class="side-panel-header">
+            <span id="pedido-numero">Pedido #1</span>
+            <button class="btn btn-danger" onclick="fecharPainel()">X</button>
+        </div>
+        <div class="side-panel-body">
+            <button class="btn btn-primary" onclick="anteriorPedido()">Anterior</button>
+            <button class="btn btn-primary float-right" onclick="proximoPedido()">Próximo</button>
+            <ul>
+                <li><strong>Dentista:</strong> <span id="pedido-dentista"></span></li>
+                <li><strong>ASB:</strong> <span id="pedido-asb"></span></li>
+                <li><strong>Consultório:</strong> <span id="pedido-consultorio"></span></li>
+                <li><strong>Data:</strong> <span id="pedido-data"></span></li>
+                <li><strong>Itens:</strong>
+                    <ul id="pedido-itens">
+                        <!-- Itens do pedido serão adicionados aqui -->
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentPedidoIndex = 0;
+        const pedidos = JSON.parse('{{ pedidos|safe }}'.replace(/&quot;/g, '"'));  // Array de pedidos
+
+
+        function toggleMaterials(pedidoId) {
+    const materiaisDiv = document.getElementById('materiais-' + pedidoId);
+    if (materiaisDiv.style.display === 'none') {
+        materiaisDiv.style.display = 'block';
+    } else {
+        materiaisDiv.style.display = 'none';
+    }
+}
+
+        function anteriorPedido() {
+            if (currentPedidoIndex > 1) {
+                visualizarPedido(currentPedidoIndex - 1);
+            }
+        }
+
+        function proximoPedido() {
+            if (currentPedidoIndex < pedidos.length) {
+                visualizarPedido(currentPedidoIndex + 1);
+            }
+        }
+
+        function excluirTodosPedidos() {
+            if (confirm('Tem certeza de que deseja excluir todos os pedidos?')) {
+                fetch('/excluir_todos_pedidos/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        alert('Todos os pedidos foram excluídos com sucesso!');
+                        location.reload();
+                    } else {
+                        alert('Erro ao excluir pedidos.');
+                    }
+                });
+            }
+        }
+
+        function baixarPedidosExcel() {
+            fetch('/baixar_pedidos_excel/', {
+                method: 'GET',
+            }).then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'pedidos.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }).catch(() => alert('Erro ao baixar o arquivo.'));
+        }
+
+        function exibirMateriais(pedidoId) {
+        const rowMateriais = document.getElementById(`materiais-${pedidoId}`);
+        const listaMateriais = document.getElementById(`lista-materiais-${pedidoId}`);
+
+        if (rowMateriais.style.display === "none") {
+            // Fazer uma requisição para obter os materiais do pedido
+            fetch(`/obter_materiais_pedido/${pedidoId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    listaMateriais.innerHTML = ''; // Limpar lista atual
+                    data.materiais.forEach(material => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${material.nome}: ${material.quantidade}`;
+                        listaMateriais.appendChild(listItem);
+                    });
+                    rowMateriais.style.display = "table-row";
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar materiais:', error);
+                });
+        } else {
+            rowMateriais.style.display = "none";
+        }
+    }
+    </script>
+</body>
+</html>

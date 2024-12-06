@@ -1,0 +1,1 @@
+web: gunicorn minha_empresa.wsgi --log-file -

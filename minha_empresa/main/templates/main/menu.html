@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Inicial do Administrador</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            background-color: #e0e0e0; /* Cor de fundo que combina com azul */
+            text-align: left;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .sidebar {
+            background-color: #004080;
+            color: #fff;
+            padding: 20px;
+            width: 250px;
+            flex-shrink: 0;
+        }
+        .sidebar button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 15px;
+            font-size: 18px;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .sidebar button:hover {
+            background-color: #003366;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .banner {
+            background-color: #004080; /* Fundo azul para o banner */
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centralizar o conteúdo */
+        }
+        .banner img {
+            max-height: 100px; /* Tamanho do logo */
+            margin-right: 20px; /* Espaçamento entre logo e título */
+        }
+        .banner h1 {
+            color: #fff; /* Texto branco */
+            margin: 0;
+            font-size: 2rem; /* Aumentar a fonte */
+            text-transform: uppercase; /* Colocar em letra maiúscula */
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        {% load static %}
+        <img src="{% static 'logo.jpg' %}" alt="Logo da Empresa">
+        <h1>Menu Principal</h1>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <button onclick="showSection('visualizarPedidos')">Visualizar Pedidos</button>
+            <button onclick="showSection('departamentos')">Departamentos</button>
+            <button onclick="showSection('produtos')">Produtos</button>
+            <button onclick="showSection('trocarSenha')">Trocar Senha</button>
+            <button onclick="logout()">Encerrar Sessão</button>
+        </div>
+        <div class="content">
+            <iframe id="sectionFrame" src=""></iframe>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            let url = "";
+            switch(sectionId) {
+                case 'visualizarPedidos':
+                    url = "{% url 'visualizar_pedidos' %}";
+                    break;
+                case 'departamentos':
+                    url = "{% url 'departamentos' %}";
+                    break;
+                case 'produtos':
+                    url = "{% url 'produtos' %}";
+                    break;
+                case 'trocarSenha':
+                    url = "{% url 'trocar_senha' %}";
+                    break;
+            }
+            document.getElementById('sectionFrame').src = url;
+        }
+
+        function logout() {
+            window.location.href = '/login/';
+        }
+    </script>
+</body>
+</html>

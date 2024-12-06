@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            background-color: #e0e0e0; /* Cor de fundo que combina com azul */
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            max-width: 400px;
+            margin: auto;
+        }
+        .banner {
+            background-color: #004080; /* Fundo azul para o banner */
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centralizar o conteúdo */
+        }
+        .banner img {
+            max-height: 100px; /* Tamanho do logo */
+            margin-right: 20px; /* Espaçamento entre logo e título */
+        }
+        .banner h1 {
+            color: #fff; /* Texto branco */
+            margin: 0;
+            font-size: 2rem; /* Aumentar a fonte */
+            text-transform: uppercase; /* Colocar em letra maiúscula */
+        }
+        .form-group-title {
+            background-color: #004080; /* Fundo azul para os títulos */
+            color: #fff; /* Texto branco */
+            padding: 10px;
+            margin-top: 20px;
+            border-radius: 5px;
+            text-align: center; /* Alinhamento ao centro */
+        }
+        .btn {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="banner">
+        {% load static %}
+        <img src="{% static 'logo.jpg' %}" alt="Logo da Empresa">
+        <h1>Login</h1>
+    </div>
+    <div class="container">
+        <form id="login-form" method="POST">
+            {% csrf_token %}
+            <div class="form-group-title">Acesse sua Conta</div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="username" placeholder="Insira seu nome de usuário" required>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" name="password" placeholder="Insira sua senha" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+        {% if messages %}
+            <div class="mt-3">
+                {% for message in messages %}
+                    <p class="text-danger">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
