@@ -1,0 +1,6 @@
+[build]
+  command = "pip install -r minha_empresa/requirements.txt && python minha_empresa/manage.py collectstatic --noinput"
+  publish = "staticfiles"
+
+[build.environment]
+  PYTHON_VERSION = "3.8"
